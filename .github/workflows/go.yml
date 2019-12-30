@@ -1,0 +1,41 @@
+name: Build geoip.dat and geosite.dat
+
+on:
+  # schedule:
+  #   - cron: "0 0 * * 3"
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go 1.13
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.13
+        id: go
+      - name: Set GOPATH and release variables
+        run: |
+          echo "::set-env name=TAG_NAME::$(date +%Y%m%d%H%M)"
+          echo "::set-env name=NAME::$(date +%Y%m%d%H%M)"
+          echo "::set-env name=GOPATH::$(dirname $GITHUB_WORKSPACE)"
+          echo "::add-path::$(dirname $GITHUB_WORKSPACE)/bin"
+        shell: bash
+      - name: Run build.sh
+        run: bash $GITHUB_WORKSPACE/build.sh
+        shell: bash
+      - name: Release
+        uses: xresloader/upload-to-github-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          file: "*.dat"
+          tags: true
+          draft: false
+          overwrite: true
+          tag_name: latest
+          update_latest_release: true
+          verbose: true

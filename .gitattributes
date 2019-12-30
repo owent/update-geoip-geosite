@@ -1,0 +1,6 @@
+*.sh text eol=lf
+*.py eol=lf
+*.md eol=crlf
+*.bat eol=crlf
+*.ps1 eol=crlf
+*.dat filter=lfs diff=lfs merge=lfs -text
