@@ -11,12 +11,8 @@ find . -iname "*.dat" | xargs rm -f ;
 set -e ;
 
 # start to build geoip.dat
-
-mkdir -p "$SCRIPT_DIR/geoip" ;
-
 cd "$SCRIPT_DIR/geoip" ;
 
-curl -L -O http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country-CSV.zip ;
 unzip GeoLite2-Country-CSV.zip ;
 rm GeoLite2-Country-CSV.zip ;
 mv GeoLite2*/* ./ ;

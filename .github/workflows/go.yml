@@ -27,8 +27,13 @@ jobs:
           echo "::add-path::$(dirname $GITHUB_WORKSPACE)/bin"
         shell: bash
       - name: Run build.sh
-        run: bash $GITHUB_WORKSPACE/build.sh
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/geoip"
+          curl -L "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-Country-CSV&license_key=$MAXMIND_LICENSE_KEY&suffix=zip" -o "$GITHUB_WORKSPACE/geoip/GeoLite2-Country-CSV.zip"
+          bash $GITHUB_WORKSPACE/build.sh
         shell: bash
+        env:
+          MAXMIND_LICENSE_KEY: ${{ secrets.MAXMIND_LICENSE_KEY }}
       - name: Release
         uses: xresloader/upload-to-github-release@v1
         env:
