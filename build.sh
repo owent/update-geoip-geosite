@@ -25,12 +25,35 @@ $GOPATH/bin/geoip --country=./geoip/GeoLite2-Country-Locations-en.csv --ipv4=./g
 
 # start to build geosite.dat
 
-GEOIP_DAT_URL="https://github.com/v2ray/geoip/releases/latest/download/geoip.dat";
+ACCELERATED_DOMAINS_CHINA="https://raw.githubusercontent.com/felixonmars/dnsmasq-china-list/master/accelerated-domains.china.conf";
 GFWLIST_ORIGIN_URL="https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt";
 GFWLIST_GEN_SCRIPT_URL="https://raw.githubusercontent.com/cokebar/gfwlist2dnsmasq/master/gfwlist2dnsmasq.sh";
 # MYIP=$(curl https://myip.biturl.top/ 2>/dev/null);
 
 go get -insecure -v -t -d github.com/v2ray/domain-list-community/... ;
+
+## add accelerated-domains-cn
+curl -L "$ACCELERATED_DOMAINS_CHINA" -o ./src/github.com/v2ray/domain-list-community/data/accelerated-domains-cn ;
+
+sed -i.bak -r 's;server\s*=\s*/([^/]+).*;\1;g' ./src/github.com/v2ray/domain-list-community/data/accelerated-domains-cn ;
+
+rm -f ./src/github.com/v2ray/domain-list-community/data/accelerated-domains-cn.bak ;
+
+sed -i.bak '/accelerated-domains-cn/d' ./src/github.com/v2ray/domain-list-community/data/cn ;
+
+echo "include:accelerated-domains-cn" >> ./src/github.com/v2ray/domain-list-community/data/cn ;
+
+sed -i.bak '/$' ./src/github.com/v2ray/domain-list-community/data/cn ;
+
+rm -f ./src/github.com/v2ray/domain-list-community/data/cn.bak ;
+
+## add gfw
+curl -L "$GFWLIST_ORIGIN_URL" -o ./src/github.com/v2ray/domain-list-community/data/gfwlist.txt ;
+
+python patch-gfwlist.py ./src/github.com/v2ray/domain-list-community/data/gfwlist.txt ;
+
+rm -f ./src/github.com/v2ray/domain-list-community/data/gfwlist.txt ;
+
 go run ./src/github.com/v2ray/domain-list-community/main.go ;
 
 mv dlc.dat geosite.dat ;

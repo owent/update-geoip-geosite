@@ -1,3 +1,7 @@
 /geoip
 /bin
 /src
+
+*.pyc
+
+__pycache__
