@@ -27,7 +27,6 @@ $GOPATH/bin/geoip --country=./geoip/GeoLite2-Country-Locations-en.csv --ipv4=./g
 
 ACCELERATED_DOMAINS_CHINA="https://raw.githubusercontent.com/felixonmars/dnsmasq-china-list/master/accelerated-domains.china.conf";
 GFWLIST_ORIGIN_URL="https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt";
-GFWLIST_GEN_SCRIPT_URL="https://raw.githubusercontent.com/cokebar/gfwlist2dnsmasq/master/gfwlist2dnsmasq.sh";
 # MYIP=$(curl https://myip.biturl.top/ 2>/dev/null);
 
 go get -insecure -v -t -d github.com/v2ray/domain-list-community/... ;
@@ -42,8 +41,6 @@ rm -f ./src/github.com/v2ray/domain-list-community/data/accelerated-domains-cn.b
 sed -i.bak '/accelerated-domains-cn/d' ./src/github.com/v2ray/domain-list-community/data/cn ;
 
 echo "include:accelerated-domains-cn" >> ./src/github.com/v2ray/domain-list-community/data/cn ;
-
-sed -i.bak '/$' ./src/github.com/v2ray/domain-list-community/data/cn ;
 
 rm -f ./src/github.com/v2ray/domain-list-community/data/cn.bak ;
 
