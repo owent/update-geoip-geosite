@@ -51,6 +51,8 @@ python patch-gfwlist.py ./src/github.com/v2ray/domain-list-community/data/gfwlis
 
 rm -f ./src/github.com/v2ray/domain-list-community/data/gfwlist.txt ;
 
+cat ./src/github.com/v2ray/domain-list-community/data/gfw ;
+
 go run ./src/github.com/v2ray/domain-list-community/main.go ;
 
 mv dlc.dat geosite.dat ;
