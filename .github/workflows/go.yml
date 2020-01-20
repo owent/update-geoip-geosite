@@ -39,7 +39,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          file: "*.dat"
+          file: "*.dat;*.ipset"
           tags: true
           draft: false
           overwrite: true
