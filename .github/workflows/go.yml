@@ -45,3 +45,4 @@ jobs:
           overwrite: true
           tag_name: latest
           update_latest_release: true
+          verbose: true
