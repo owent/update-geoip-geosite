@@ -12,6 +12,8 @@ script_dir = os.path.dirname(os.path.realpath(__file__))
 def compact_rules(input, origin_domains, origin_plains):
     ret = []
     for d in input:
+        if len(d.strip()) == 0:
+            continue
         skip = False
         groups = d.split(".")
         for i in range(1, len(groups)):
