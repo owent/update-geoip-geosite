@@ -117,11 +117,11 @@ def main():
     for d in compact_rules(origin_domains, origin_domains, origin_plains):
         gfwlist_fd.write('{0}\n'.format(d))
         gfwlist_dnsmasq_conf_fd.write('server=/{0}/{1}\n'.format(d, gfwlist_dnsmasq_server))
-        gfwlist_dnsmasq_conf_fd.write('ipset=/{0}/DNSMASQ_GFW_IP\n'.format(d))
+        gfwlist_dnsmasq_conf_fd.write('ipset=/{0}/DNSMASQ_GFW_IPV4,DNSMASQ_GFW_IPV6\n'.format(d))
     for d in compact_rules(origin_plains, origin_domains, origin_plains):
         gfwlist_fd.write('keyword:{0}\n'.format(d))
         gfwlist_dnsmasq_conf_fd.write('server=/{0}*/{1}\n'.format(d, gfwlist_dnsmasq_server))
-        gfwlist_dnsmasq_conf_fd.write('ipset=/{0}*/DNSMASQ_GFW_IP\n'.format(d))
+        gfwlist_dnsmasq_conf_fd.write('ipset=/{0}*/DNSMASQ_GFW_IPV4,DNSMASQ_GFW_IPV6\n'.format(d))
     gfwlist_fd.close()
     gfwlist_dnsmasq_conf_fd.close()
 
