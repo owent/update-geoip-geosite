@@ -39,7 +39,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          file: "*.dat;*.ipset"
+          file: "*.dat;*.ipset;dnsmasq-blacklist.conf"
           tags: true
           draft: false
           overwrite: true

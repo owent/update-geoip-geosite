@@ -42,6 +42,8 @@ def compact_rules(input, origin_domains, origin_plains):
 
 def main():
     gfwlist_file = os.path.join(script_dir, 'src', 'github.com', 'v2ray', 'domain-list-community', 'data', 'gfwlist.txt')
+    gfwlist_dnsmasq_conf = os.path.join(script_dir, 'dnsmasq-gfw.conf')
+    gfwlist_dnsmasq_server = '127.0.0.1#53'
     LINE_SEP = re.compile('[\r\n]?[\r\n]')
     IGNORE_RULE = re.compile('^\\!|\\[|^@@|(https?:\\/\\/){0,1}[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+')
     REMOVE_PREFIX = re.compile('^(\\|\\|?)?(https?://)?(?P<DOMAIN>[^\\r\\n]+)')
@@ -50,6 +52,10 @@ def main():
     
     if len(sys.argv) > 1:
         gfwlist_file = sys.argv[1]
+    if len(sys.argv) > 2:
+        gfwlist_dnsmasq_conf = sys.argv[2]
+    if len(sys.argv) > 3:
+        gfwlist_dnsmasq_server = sys.argv[3]
 
     if not os.path.exists(gfwlist_file):
         sys.stderr.write('{0} not found\n'.format(gfwlist_file))
@@ -104,12 +110,18 @@ def main():
         origin_domains[domain] = 1
 
     gfwlist_fd = codecs.open(os.path.join(os.path.dirname(gfwlist_file), 'gfw'), "w", encoding='utf-8')
+    gfwlist_dnsmasq_conf_fd = codecs.open(gfwlist_dnsmasq_conf, "w", encoding='utf-8')
     gfwlist_fd.truncate()
     for d in compact_rules(origin_domains, origin_domains, origin_plains):
         gfwlist_fd.write('{0}\n'.format(d))
+        gfwlist_dnsmasq_conf_fd.write('server=/{0}/{1}\n'.format(d, gfwlist_dnsmasq_server))
+        gfwlist_dnsmasq_conf_fd.write('ipset=/{0}/DNSMASQ_GFW_IP\n'.format(d))
     for d in compact_rules(origin_plains, origin_domains, origin_plains):
         gfwlist_fd.write('keyword:{0}\n'.format(d))
+        gfwlist_dnsmasq_conf_fd.write('server=/{0}*/{1}\n'.format(d, gfwlist_dnsmasq_server))
+        gfwlist_dnsmasq_conf_fd.write('ipset=/{0}*/DNSMASQ_GFW_IP\n'.format(d))
     gfwlist_fd.close()
+    gfwlist_dnsmasq_conf_fd.close()
 
 if __name__ == '__main__':
     main()

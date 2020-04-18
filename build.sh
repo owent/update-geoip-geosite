@@ -47,7 +47,7 @@ rm -f ./src/github.com/v2ray/domain-list-community/data/cn.bak ;
 ## add gfw
 curl -L "$GFWLIST_ORIGIN_URL" -o ./src/github.com/v2ray/domain-list-community/data/gfwlist.txt ;
 
-python patch-gfwlist.py ./src/github.com/v2ray/domain-list-community/data/gfwlist.txt ;
+python patch-gfwlist.py ./src/github.com/v2ray/domain-list-community/data/gfwlist.txt dnsmasq-blacklist.conf "127.0.0.1#53";
 
 rm -f ./src/github.com/v2ray/domain-list-community/data/gfwlist.txt ;
 
