@@ -45,7 +45,7 @@ def compact_rules(input, origin_domains, origin_plains):
 def main():
     gfwlist_file = os.path.join(script_dir, 'src', 'github.com', 'v2ray', 'domain-list-community', 'data', 'gfwlist.txt')
     gfwlist_dnsmasq_conf = os.path.join(script_dir, 'dnsmasq-gfw.conf')
-    gfwlist_dnsmasq_server = '127.0.0.1#53'
+    gfwlist_dnsmasq_server = '1.1.1.1#53'
     LINE_SEP = re.compile('[\r\n]?[\r\n]')
     IGNORE_RULE = re.compile('^\\!|\\[|^@@|(https?:\\/\\/){0,1}[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+')
     REMOVE_PREFIX = re.compile('^(\\|\\|?)?(https?://)?(?P<DOMAIN>[^\\r\\n]+)')
