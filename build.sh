@@ -57,6 +57,7 @@ go run ./src/github.com/v2ray/domain-list-community/main.go ;
 
 mv dlc.dat geosite.dat ;
 
-chmod +x build-ipset-cn.py ;
+chmod +x build-ipset.py ;
 
-./build-ipset-cn.py ;
+./build-ipset.py cn;
+./build-ipset.py hk;
