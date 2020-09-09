@@ -29,7 +29,7 @@ ACCELERATED_DOMAINS_CHINA="https://raw.githubusercontent.com/felixonmars/dnsmasq
 GFWLIST_ORIGIN_URL="https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt";
 # MYIP=$(curl https://myip.biturl.top/ 2>/dev/null);
 
-go get -insecure -v -t -d github.com/v2fly/domain-list-community/... ;
+go get -insecure -v -t -d github.com/v2fly/domain-list-community ;
 
 ## add accelerated-domains-cn
 curl -L "$ACCELERATED_DOMAINS_CHINA" -o ./src/github.com/v2fly/domain-list-community/data/accelerated-domains-cn ;
