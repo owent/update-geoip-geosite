@@ -20,7 +20,7 @@ ls ;
 
 cd "$SCRIPT_DIR" ;
 
-go get -insecure -u github.com/v2fly/geoip ;
+go get -u -insecure -v github.com/v2fly/geoip ;
 $GOPATH/bin/geoip --country=./geoip/GeoLite2-Country-Locations-en.csv --ipv4=./geoip/GeoLite2-Country-Blocks-IPv4.csv --ipv6=./geoip/GeoLite2-Country-Blocks-IPv6.csv ;
 
 # start to build geosite.dat
@@ -29,7 +29,7 @@ ACCELERATED_DOMAINS_CHINA="https://raw.githubusercontent.com/felixonmars/dnsmasq
 GFWLIST_ORIGIN_URL="https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt";
 # MYIP=$(curl https://myip.biturl.top/ 2>/dev/null);
 
-go get -insecure -v -t -d github.com/v2fly/domain-list-community ;
+go get -insecure -v github.com/v2fly/domain-list-community ;
 
 ## add accelerated-domains-cn
 curl -L "$ACCELERATED_DOMAINS_CHINA" -o ./src/github.com/v2fly/domain-list-community/data/accelerated-domains-cn ;
