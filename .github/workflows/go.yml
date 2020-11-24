@@ -19,15 +19,13 @@ jobs:
         with:
           go-version: ^1.15
         id: go
-      - name: Set GOPATH and release variables
-        run: |
-          echo "::set-env name=TAG_NAME::$(date +%Y%m%d%H%M)"
-          echo "::set-env name=NAME::$(date +%Y%m%d%H%M)"
-          echo "::set-env name=GOPATH::$(dirname $GITHUB_WORKSPACE)"
-          echo "::add-path::$(dirname $GITHUB_WORKSPACE)/bin"
-        shell: bash
       - name: Run build.sh
         run: |
+          # Set GOPATH and release variables
+          export TAG_NAME=$(date +%Y%m%d%H%M) ;
+          export NAME=$(date +%Y%m%d%H%M) ;
+          export GOPATH=$(dirname $GITHUB_WORKSPACE) ;
+          export PATH="$(dirname $GITHUB_WORKSPACE)/bin:$PATH" ;
           mkdir -p "$GITHUB_WORKSPACE/geoip"
           curl -L "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-Country-CSV&license_key=$MAXMIND_LICENSE_KEY&suffix=zip" -o "$GITHUB_WORKSPACE/geoip/GeoLite2-Country-CSV.zip"
           bash $GITHUB_WORKSPACE/build.sh
