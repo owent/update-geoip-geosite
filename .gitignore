@@ -1,7 +1,9 @@
 /geoip
-/bin
-/src
+/repos
+/gopath
 
 *.pyc
 
 __pycache__
+
+dnsmasq-blacklist.conf

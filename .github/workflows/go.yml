@@ -13,7 +13,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@master
+        uses: actions/checkout@v2
+      - name: Checkout geoip
+        uses: actions/checkout@v2
+        with:
+          repository: v2fly/geoip
+          path: repos/geoip
+      - name: Checkout domain-list-community
+        uses: actions/checkout@v2
+        with:
+          repository: v2fly/domain-list-community
+          path: repos/domain-list-community
       - name: Set up Go 1.15
         uses: actions/setup-go@v2
         with:

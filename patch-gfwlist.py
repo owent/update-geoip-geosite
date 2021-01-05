@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import os
@@ -6,8 +6,6 @@ import sys
 import codecs
 import re
 import base64
-
-script_dir = os.path.dirname(os.path.realpath(__file__))
 
 def compact_rules(input, origin_domains, origin_plains):
     ret = []
@@ -43,8 +41,8 @@ def compact_rules(input, origin_domains, origin_plains):
     return ret
 
 def main():
-    gfwlist_file = os.path.join(script_dir, 'src', 'github.com', 'v2fly', 'domain-list-community', 'data', 'gfwlist.txt')
-    gfwlist_dnsmasq_conf = os.path.join(script_dir, 'dnsmasq-gfw.conf')
+    gfwlist_file = os.path.join('data', 'gfwlist.txt')
+    gfwlist_dnsmasq_conf = os.path.join('dnsmasq-gfw.conf')
     gfwlist_dnsmasq_server = '1.1.1.1#53'
     LINE_SEP = re.compile('[\r\n]?[\r\n]')
     IGNORE_RULE = re.compile('^\\!|\\[|^@@|(https?:\\/\\/){0,1}[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+')
