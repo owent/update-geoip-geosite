@@ -30,10 +30,7 @@ mv "$SCRIPT_DIR/geoip"/GeoLite2* geolite2
 go run ./ # --country=../../geoip/GeoLite2-Country-Locations-en.csv --ipv4=../../geoip/GeoLite2-Country-Blocks-IPv4.csv --ipv6=../../geoip/GeoLite2-Country-Blocks-IPv6.csv ;
 
 cd ./output/dat || exit 1
-for name in $(ls *.dat); do
-  sha256sum ${name} > ./${name}.sha256sum
-done
-mv -f *.dat *.sha256sum "$SCRIPT_DIR" ;
+mv -f *.dat "$SCRIPT_DIR" ;
 
 cd "$SCRIPT_DIR" ;
 
@@ -77,3 +74,7 @@ chmod +x build-ipset.py ;
 
 python3 ./build-ipset.py cn;
 python3 ./build-ipset.py hk;
+
+for name in $(ls *.dat); do
+  sha256sum ${name} > ./${name}.sha256sum
+done
