@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd "$(dirname "${BASH_SOURCE[0]}")" ;
+cd "$(dirname "$0")" ;
 
 SCRIPT_DIR="$PWD";
 
@@ -18,7 +18,6 @@ cd "$SCRIPT_DIR/geoip" ;
 
 unzip GeoLite2-Country-CSV.zip ;
 rm GeoLite2-Country-CSV.zip ;
-mv GeoLite2*/* ./ ;
 ls ;
 
 cd "$SCRIPT_DIR" ;
@@ -27,9 +26,14 @@ echo "Start to generate geoip";
 
 cd repos/geoip ;
 go mod download ;
-go run ./ --country=../../geoip/GeoLite2-Country-Locations-en.csv --ipv4=../../geoip/GeoLite2-Country-Blocks-IPv4.csv --ipv6=../../geoip/GeoLite2-Country-Blocks-IPv6.csv ;
+mv "$SCRIPT_DIR/geoip"/GeoLite2* geolite2
+go run ./ # --country=../../geoip/GeoLite2-Country-Locations-en.csv --ipv4=../../geoip/GeoLite2-Country-Blocks-IPv4.csv --ipv6=../../geoip/GeoLite2-Country-Blocks-IPv6.csv ;
 
-mv -f geoip.dat ../../ ;
+cd ./output/dat || exit 1
+for name in $(ls *.dat); do
+  sha256sum ${name} > ./${name}.sha256sum
+done
+mv -f *.dat *.sha256sum "$SCRIPT_DIR" ;
 
 cd "$SCRIPT_DIR" ;
 
@@ -57,7 +61,7 @@ rm -f ./data/cn.bak ;
 ## add gfw
 curl -L "$GFWLIST_ORIGIN_URL" -o ./data/gfwlist.txt ;
 
-python3 ../../patch-gfwlist.py ./data/gfwlist.txt ../../dnsmasq-blacklist.conf "1.1.1.1#53";
+python3 ../../patch-gfwlist.py ./data/gfwlist.txt ../../dnsmasq-blacklist.conf "8.8.8.8#53";
 
 rm -f ./data/gfwlist.txt ;
 
