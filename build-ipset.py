@@ -13,9 +13,9 @@ def main():
     loc_code = 'cn'
     if len(sys.argv) > 1:
         loc_code = sys.argv[1].lower()
-    loc_file = os.path.join(script_dir, 'geoip', 'GeoLite2-Country-Locations-en.csv')
-    ipv4_file = os.path.join(script_dir, 'geoip', 'GeoLite2-Country-Blocks-IPv4.csv')
-    ipv6_file = os.path.join(script_dir, 'geoip', 'GeoLite2-Country-Blocks-IPv6.csv')
+    loc_file = os.path.join(script_dir, 'repos', 'geoip', 'geolite2', 'GeoLite2-Country-Locations-en.csv')
+    ipv4_file = os.path.join(script_dir, 'repos', 'geoip', 'geolite2', 'GeoLite2-Country-Blocks-IPv4.csv')
+    ipv6_file = os.path.join(script_dir, 'repos', 'geoip', 'geolite2', 'GeoLite2-Country-Blocks-IPv6.csv')
 
     GEONAME_ID=''
     with open(loc_file) as csvfile:
