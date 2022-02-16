@@ -79,6 +79,10 @@ chmod +x build-ipset.py
 python3 ./build-ipset.py cn
 python3 ./build-ipset.py hk
 
+if [[ -e "test.dat" ]]; then
+  rm -rf test.dat
+fi
+
 for name in $(ls *.dat); do
   sha256sum ${name} >./${name}.sha256sum
 done
