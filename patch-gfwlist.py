@@ -61,8 +61,8 @@ def main():
     cmd_parser.add_argument(
         "--dnsmasq-server",
         action="store",
-        help="DNS Server for dnsmasq",
-        dest="gfwlist_dnsmasq_server(e.g. 1.1.1.1,1.1.1.1#53)",
+        help="DNS Server for dnsmasq(e.g. 1.1.1.1,1.1.1.1#53)",
+        dest="gfwlist_dnsmasq_server",
         default='1.1.1.1')
     cmd_parser.add_argument("--dnsmasq-ipset",
                             action="store",
