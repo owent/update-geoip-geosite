@@ -6,6 +6,8 @@ import sys
 import codecs
 import re
 import base64
+import argparse
+
 
 def compact_rules(input, origin_domains, origin_plains):
     ret = []
@@ -30,7 +32,8 @@ def compact_rules(input, origin_domains, origin_plains):
                     continue
                 pd = ".".join(groups[i:j])
                 if pd in origin_plains:
-                    print('Ignore {0} for keyword:{1} already exists'.format(d, pd))
+                    print('Ignore {0} for keyword:{1} already exists'.format(
+                        d, pd))
                     skip = True
                     break
             if skip:
@@ -40,28 +43,69 @@ def compact_rules(input, origin_domains, origin_plains):
         ret.append(d)
     return ret
 
+
 def main():
-    gfwlist_file = os.path.join('data', 'gfwlist.txt')
-    gfwlist_dnsmasq_conf = os.path.join('dnsmasq-gfw.conf')
-    gfwlist_dnsmasq_server = '1.1.1.1#53'
+    cmd_parser = argparse.ArgumentParser(usage="%(prog)s [options...]")
+    cmd_parser.add_argument("-g",
+                            "--gfwlist",
+                            action="store",
+                            help="gfwlist.txt",
+                            dest="gfwlist_file",
+                            default=os.path.join('data', 'gfwlist.txt'))
+    cmd_parser.add_argument("-d",
+                            "--dnsmasq-conf",
+                            action="store",
+                            help="dnsmasq-blacklist.conf",
+                            dest="gfwlist_dnsmasq_conf",
+                            default=os.path.join('dnsmasq-blacklist.conf'))
+    cmd_parser.add_argument(
+        "--dnsmasq-server",
+        action="store",
+        help="DNS Server for dnsmasq",
+        dest="gfwlist_dnsmasq_server(e.g. 1.1.1.1,1.1.1.1#53)",
+        default='1.1.1.1')
+    cmd_parser.add_argument("--dnsmasq-ipset",
+                            action="store",
+                            help="ipset for dnsmasq",
+                            dest="gfwlist_dnsmasq_ipset",
+                            default='DNSMASQ_GFW_IPV4,DNSMASQ_GFW_IPV6')
+    cmd_parser.add_argument("-s",
+                            "--smartdns-conf",
+                            action="store",
+                            help="smartdns-blacklist.conf",
+                            dest="gfwlist_smartdns_conf",
+                            default=os.path.join('dnsmasq-blacklist.conf'))
+    cmd_parser.add_argument("--smartdns-group",
+                            action="store",
+                            help="group of smartdns",
+                            dest="gfwlist_smartdns_group",
+                            default='gfwlist')
+    cmd_parser.add_argument("--smartdns-ipset",
+                            action="store",
+                            help="ipset for smartdns",
+                            dest="gfwlist_smartdns_ipset",
+                            default='#4:DNSMASQ_GFW_IPV4,#6:DNSMASQ_GFW_IPV6')
+    cmd_parser.add_argument(
+        "--smartdns-nfset",
+        action="store",
+        help="nftables set for smartdns(e.g. #4:inet mytable myset,#6:-)",
+        dest="gfwlist_smartdns_nfset",
+        default=None)
+    (options, left_args) = cmd_parser.parse_args()
+
     LINE_SEP = re.compile('[\r\n]?[\r\n]')
-    IGNORE_RULE = re.compile('^\\!|\\[|^@@|(https?:\\/\\/){0,1}[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+')
+    IGNORE_RULE = re.compile(
+        '^\\!|\\[|^@@|(https?:\\/\\/){0,1}[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+')
     REMOVE_PREFIX = re.compile('^(\\|\\|?)?(https?://)?(?P<DOMAIN>[^\\r\\n]+)')
     REMOVE_SUFFIX = re.compile('(?P<DOMAIN>[^\\r\\n\\/]+)/.*$|%2F.*$')
-    CONVERT_GLOB = re.compile('^([^\\.\\^*]*\\*[^\\.]*\\.)+(?P<DOMAIN>[^\\r\\n\\/\\*]+)')
-    
-    if len(sys.argv) > 1:
-        gfwlist_file = sys.argv[1]
-    if len(sys.argv) > 2:
-        gfwlist_dnsmasq_conf = sys.argv[2]
-    if len(sys.argv) > 3:
-        gfwlist_dnsmasq_server = sys.argv[3]
+    CONVERT_GLOB = re.compile(
+        '^([^\\.\\^*]*\\*[^\\.]*\\.)+(?P<DOMAIN>[^\\r\\n\\/\\*]+)')
 
-    if not os.path.exists(gfwlist_file):
-        sys.stderr.write('{0} not found\n'.format(gfwlist_file))
+    if not os.path.exists(options.gfwlist_file):
+        sys.stderr.write('{0} not found\n'.format(options.gfwlist_file))
         exit(1)
-    
-    gfwlist_fd = codecs.open(gfwlist_file, "r", encoding='utf-8')
+
+    gfwlist_fd = codecs.open(options.gfwlist_file, "r", encoding='utf-8')
     gfwlist_text = base64.b64decode(gfwlist_fd.read()).decode('utf-8')
     gfwlist_fd.close()
 
@@ -109,19 +153,41 @@ def main():
             continue
         origin_domains[domain] = 1
 
-    gfwlist_fd = codecs.open(os.path.join(os.path.dirname(gfwlist_file), 'gfw'), "w", encoding='utf-8')
-    gfwlist_dnsmasq_conf_fd = codecs.open(gfwlist_dnsmasq_conf, "w", encoding='utf-8')
+    gfwlist_fd = codecs.open(os.path.join(
+        os.path.dirname(options.gfwlist_file), 'gfw'),
+                             "w",
+                             encoding='utf-8')
+    gfwlist_dnsmasq_conf_fd = codecs.open(options.gfwlist_dnsmasq_conf,
+                                          "w",
+                                          encoding='utf-8')
+    gfwlist_smart_conf_fd = codecs.open(options.gfwlist_smartdns_conf,
+                                        "w",
+                                        encoding='utf-8')
     gfwlist_fd.truncate()
     for d in compact_rules(origin_domains, origin_domains, origin_plains):
-        gfwlist_fd.write('{0}\n'.format(d))
-        gfwlist_dnsmasq_conf_fd.write('server=/{0}/{1}\n'.format(d, gfwlist_dnsmasq_server))
-        gfwlist_dnsmasq_conf_fd.write('ipset=/{0}/DNSMASQ_GFW_IPV4,DNSMASQ_GFW_IPV6\n'.format(d))
+        gfwlist_fd.write("{0}\n".format(d))
+        gfwlist_dnsmasq_conf_fd.write('server=/{0}/{1}\n'.format(
+            d, options.gfwlist_dnsmasq_server))
+        gfwlist_dnsmasq_conf_fd.write('ipset=/{0}/{1}\n'.format(
+            d, options.gfwlist_dnsmasq_ipset))
+        gfwlist_smart_conf_fd.write('nameserver /{0}/{1}\n'.format(
+            d, options.gfwlist_smartdns_group))
+        if options.gfwlist_smartdns_ipset:
+            gfwlist_smart_conf_fd.write('ipset /{0}/{1}\n'.format(
+                d, options.gfwlist_smartdns_ipset))
+        if options.gfwlist_smartdns_nfset:
+            gfwlist_smart_conf_fd.write('nftset /{0}/{1}\n'.format(
+                d, options.gfwlist_smartdns_nfset))
     for d in compact_rules(origin_plains, origin_domains, origin_plains):
         gfwlist_fd.write('keyword:{0}\n'.format(d))
-        gfwlist_dnsmasq_conf_fd.write('server=/{0}*/{1}\n'.format(d, gfwlist_dnsmasq_server))
-        gfwlist_dnsmasq_conf_fd.write('ipset=/{0}*/DNSMASQ_GFW_IPV4,DNSMASQ_GFW_IPV6\n'.format(d))
+        gfwlist_dnsmasq_conf_fd.write('server=/{0}*/{1}\n'.format(
+            d, options.gfwlist_dnsmasq_server))
+        gfwlist_dnsmasq_conf_fd.write('ipset=/{0}*/{1}\n'.format(
+            d, options.gfwlist_dnsmasq_ipset))
     gfwlist_fd.close()
     gfwlist_dnsmasq_conf_fd.close()
+    gfwlist_smart_conf_fd.close()
+
 
 if __name__ == '__main__':
     main()
