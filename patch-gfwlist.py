@@ -91,7 +91,8 @@ def main():
         help="nftables set for smartdns(e.g. #4:inet mytable myset,#6:-)",
         dest="gfwlist_smartdns_nfset",
         default=None)
-    (options, left_args) = cmd_parser.parse_args()
+
+    options = cmd_parser.parse_args()
 
     LINE_SEP = re.compile('[\r\n]?[\r\n]')
     IGNORE_RULE = re.compile(
