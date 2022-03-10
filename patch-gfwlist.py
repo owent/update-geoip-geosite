@@ -18,26 +18,27 @@ def compact_rules(input, origin_domains, origin_plains):
         groups = d.split(".")
         for i in range(1, len(groups)):
             pd = ".".join(groups[i:])
-            if pd in origin_domains:
+            if pd in origin_domains or pd in origin_plains:
                 print('Ignore {0} for domain:{1} already exists'.format(d, pd))
                 skip = True
                 break
         if skip:
             continue
 
-        for i in range(0, len(groups)):
-            for j in range(i + 1, len(groups) + 1):
-                # skip self
-                if i == 0 and j == len(groups):
-                    continue
-                pd = ".".join(groups[i:j])
-                if pd in origin_plains:
-                    print('Ignore {0} for keyword:{1} already exists'.format(
-                        d, pd))
-                    skip = True
-                    break
-            if skip:
-                break
+        # Ingore tail wildcard
+        # for i in range(0, len(groups)):
+        #     for j in range(i + 1, len(groups) + 1):
+        #         # skip self
+        #         if i == 0 and j == len(groups):
+        #             continue
+        #         pd = ".".join(groups[i:j])
+        #         if pd in origin_plains:
+        #             print('Ignore {0} for keyword:{1} already exists'.format(
+        #                 d, pd))
+        #             skip = True
+        #             break
+        #     if skip:
+        #         break
         if skip:
             continue
         ret.append(d)
@@ -128,18 +129,23 @@ def main():
 
         mat = CONVERT_GLOB.match(domain)
         if mat:
-            # print('{0} => {1}'.format(domain, mat.group('DOMAIN')))
+            print('Convert: {0} => {1}'.format(domain, mat.group('DOMAIN')))
             domain = mat.group('DOMAIN')
 
         # XXX.* -> plain XXX
         if domain.endswith('.*'):
+            # Ignore tail wildcard
             domain = domain[0:len(domain) - 2]
             if domain.find('*') < 0:
                 origin_plains[domain] = 1
+                origin_plains['{0}.com'.format(domain)] = 1
+                origin_plains['{0}.cn'.format(domain)] = 1
+                origin_plains['{0}.com.cn'.format(domain)] = 1
                 continue
 
         # XXX* -> plain XXX
         if domain.endswith('*'):
+            # Ignore tail wildcard
             domain = domain[0:len(domain) - 1]
             if domain.find('*') < 0:
                 origin_plains[domain] = 1
@@ -180,11 +186,21 @@ def main():
             gfwlist_smart_conf_fd.write('nftset /{0}/{1}\n'.format(
                 d, options.gfwlist_smartdns_nfset))
     for d in compact_rules(origin_plains, origin_domains, origin_plains):
+        if d in origin_domains:
+            continue
         gfwlist_fd.write('keyword:{0}\n'.format(d))
-        gfwlist_dnsmasq_conf_fd.write('server=/{0}*/{1}\n'.format(
+        gfwlist_dnsmasq_conf_fd.write('server=/{0}/{1}\n'.format(
             d, options.gfwlist_dnsmasq_server))
-        gfwlist_dnsmasq_conf_fd.write('ipset=/{0}*/{1}\n'.format(
+        gfwlist_dnsmasq_conf_fd.write('ipset=/{0}/{1}\n'.format(
             d, options.gfwlist_dnsmasq_ipset))
+        gfwlist_smart_conf_fd.write('nameserver /{0}/{1}\n'.format(
+            d, options.gfwlist_smartdns_group))
+        if options.gfwlist_smartdns_ipset:
+            gfwlist_smart_conf_fd.write('ipset /{0}/{1}\n'.format(
+                d, options.gfwlist_smartdns_ipset))
+        if options.gfwlist_smartdns_nfset:
+            gfwlist_smart_conf_fd.write('nftset /{0}/{1}\n'.format(
+                d, options.gfwlist_smartdns_nfset))
     gfwlist_fd.close()
     gfwlist_dnsmasq_conf_fd.close()
     gfwlist_smart_conf_fd.close()
