@@ -92,6 +92,17 @@ def main():
         help="nftables set for smartdns(e.g. #4:inet mytable myset,#6:-)",
         dest="gfwlist_smartdns_nfset",
         default=None)
+    cmd_parser.add_argument("-c",
+                            "--coredns-conf",
+                            action="store",
+                            help="coredns-blacklist.conf",
+                            dest="gfwlist_coredns_conf",
+                            default=os.path.join('coredns-blacklist.conf'))
+    cmd_parser.add_argument("--coredns-snippet",
+                            action="store",
+                            help="import snippet of coredns",
+                            dest="gfwlist_coredns_snippet",
+                            default='gfwlist')
 
     options = cmd_parser.parse_args()
 
@@ -170,6 +181,10 @@ def main():
     gfwlist_smart_conf_fd = codecs.open(options.gfwlist_smartdns_conf,
                                         "w",
                                         encoding='utf-8')
+    gfwlist_coredns_conf_fd = codecs.open(options.gfwlist_coredns_conf,
+                                          "w",
+                                          encoding='utf-8')
+
     gfwlist_fd.truncate()
     for d in compact_rules(origin_domains, origin_domains, origin_plains):
         gfwlist_fd.write("{0}\n".format(d))
@@ -185,6 +200,8 @@ def main():
         if options.gfwlist_smartdns_nfset:
             gfwlist_smart_conf_fd.write('nftset /{0}/{1}\n'.format(
                 d, options.gfwlist_smartdns_nfset))
+        gfwlist_coredns_conf_fd.write('{0} {\n  import {1}\n}\n'.format(
+            d, options.gfwlist_coredns_snippet))
     for d in compact_rules(origin_plains, origin_domains, origin_plains):
         if d in origin_domains:
             continue
@@ -201,6 +218,8 @@ def main():
         if options.gfwlist_smartdns_nfset:
             gfwlist_smart_conf_fd.write('nftset /{0}/{1}\n'.format(
                 d, options.gfwlist_smartdns_nfset))
+        gfwlist_coredns_conf_fd.write('{0} {\n  import {1}\n}\n'.format(
+            d, options.gfwlist_coredns_snippet))
     gfwlist_fd.close()
     gfwlist_dnsmasq_conf_fd.close()
     gfwlist_smart_conf_fd.close()
