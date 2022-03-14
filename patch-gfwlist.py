@@ -184,7 +184,7 @@ def main():
     gfwlist_coredns_conf_fd = codecs.open(options.gfwlist_coredns_conf,
                                           "w",
                                           encoding='utf-8')
-
+    gfwlist_coredns_conf_domains = []
     gfwlist_fd.truncate()
     for d in compact_rules(origin_domains, origin_domains, origin_plains):
         gfwlist_fd.write("{0}\n".format(d))
@@ -200,8 +200,7 @@ def main():
         if options.gfwlist_smartdns_nfset:
             gfwlist_smart_conf_fd.write('nftset /{0}/{1}\n'.format(
                 d, options.gfwlist_smartdns_nfset))
-        gfwlist_coredns_conf_fd.write('{0} {1}\n  import {2}\n{3}\n'.format(
-            d, '{', options.gfwlist_coredns_snippet, '}'))
+        gfwlist_coredns_conf_domains.append(d)
     for d in compact_rules(origin_plains, origin_domains, origin_plains):
         if d in origin_domains:
             continue
@@ -218,11 +217,13 @@ def main():
         if options.gfwlist_smartdns_nfset:
             gfwlist_smart_conf_fd.write('nftset /{0}/{1}\n'.format(
                 d, options.gfwlist_smartdns_nfset))
-        gfwlist_coredns_conf_fd.write('{0} {1}\n  import {2}\n{3}\n'.format(
-            d, '{', options.gfwlist_coredns_snippet, '}'))
+        gfwlist_coredns_conf_domains.append(d)
     gfwlist_fd.close()
     gfwlist_dnsmasq_conf_fd.close()
     gfwlist_smart_conf_fd.close()
+    gfwlist_coredns_conf_fd.write('{0} {1}\n  import {2}\n{3}\n'.format(
+        ' '.join(gfwlist_coredns_conf_domains), '{',
+        options.gfwlist_coredns_snippet, '}'))
     gfwlist_coredns_conf_fd.close()
 
 
