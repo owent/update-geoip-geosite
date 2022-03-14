@@ -223,6 +223,7 @@ def main():
     gfwlist_fd.close()
     gfwlist_dnsmasq_conf_fd.close()
     gfwlist_smart_conf_fd.close()
+    gfwlist_coredns_conf_fd.close()
 
 
 if __name__ == '__main__':
