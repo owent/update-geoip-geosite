@@ -200,8 +200,8 @@ def main():
         if options.gfwlist_smartdns_nfset:
             gfwlist_smart_conf_fd.write('nftset /{0}/{1}\n'.format(
                 d, options.gfwlist_smartdns_nfset))
-        gfwlist_coredns_conf_fd.write('{0} {\n  import {1}\n}\n'.format(
-            d, options.gfwlist_coredns_snippet))
+        gfwlist_coredns_conf_fd.write('{0} {1}\n  import {2}\n{3}\n'.format(
+            d, '{', options.gfwlist_coredns_snippet, '}'))
     for d in compact_rules(origin_plains, origin_domains, origin_plains):
         if d in origin_domains:
             continue
@@ -218,8 +218,8 @@ def main():
         if options.gfwlist_smartdns_nfset:
             gfwlist_smart_conf_fd.write('nftset /{0}/{1}\n'.format(
                 d, options.gfwlist_smartdns_nfset))
-        gfwlist_coredns_conf_fd.write('{0} {\n  import {1}\n}\n'.format(
-            d, options.gfwlist_coredns_snippet))
+        gfwlist_coredns_conf_fd.write('{0} {1}\n  import {2}\n{3}\n'.format(
+            d, '{', options.gfwlist_coredns_snippet, '}'))
     gfwlist_fd.close()
     gfwlist_dnsmasq_conf_fd.close()
     gfwlist_smart_conf_fd.close()
