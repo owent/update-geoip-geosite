@@ -62,7 +62,8 @@ python3 ../../patch-gfwlist.py \
   --gfwlist ./data/gfwlist.txt \
   --dnsmasq-conf ../../dnsmasq-blacklist.conf \
   --dnsmasq-server "8.8.8.8" \
-  --smartdns-conf ../../smartdns-blacklist.conf
+  --smartdns-conf ../../smartdns-blacklist.conf \
+  --coredns-conf ../../coredns-blacklist.conf
 
 rm -f ./data/gfwlist.txt
 
