@@ -50,8 +50,11 @@ curl -L "$APPLE_CHINA" -o ./data/apple-cn
 curl -L "$GOOGLE_CHINA" -o ./data/google-cn
 
 sed -i.bak -r 's;server\s*=\s*/([^/]+).*;\1;g' ./data/accelerated-domains-cn
+sed -i.bak -r '/^\s*#/d' ./data/accelerated-domains-cn
 sed -i.bak -r 's;server\s*=\s*/([^/]+).*;\1;g' ./data/apple-cn
+sed -i.bak -r '/^\s*#/d' ./data/apple-cn
 sed -i.bak -r 's;server\s*=\s*/([^/]+).*;\1;g' ./data/google-cn
+sed -i.bak -r '/^\s*#/d' ./data/google-cn
 
 rm -f ./data/accelerated-domains-cn.bak
 rm -f ./data/apple-cn.bak
