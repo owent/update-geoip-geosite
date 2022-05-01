@@ -38,22 +38,72 @@ cd "$SCRIPT_DIR"
 echo "Start to geosite.dat/dlc.dat"
 cd repos/domain-list-community
 
-ACCELERATED_DOMAINS_CHINA="https://raw.githubusercontent.com/felixonmars/dnsmasq-china-list/master/accelerated-domains.china.conf"
+ACCELERATED_DOMAINS_CHINA="https://cdn.jsdelivr.net/gh/felixonmars/dnsmasq-china-list/accelerated-domains.china.conf"
+APPLE_CHINA="https://cdn.jsdelivr.net/gh/felixonmars/dnsmasq-china-list/apple.china.conf"
+GOOGLE_CHINA="https://cdn.jsdelivr.net/gh/felixonmars/dnsmasq-china-list/google.china.conf"
 GFWLIST_ORIGIN_URL="https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt"
 # MYIP=$(curl https://myip.biturl.top/ 2>/dev/null);
 
 ## add accelerated-domains-cn
 curl -L "$ACCELERATED_DOMAINS_CHINA" -o ./data/accelerated-domains-cn
+curl -L "$APPLE_CHINA" -o ./data/apple-cn
+curl -L "$GOOGLE_CHINA" -o ./data/google-cn
 
 sed -i.bak -r 's;server\s*=\s*/([^/]+).*;\1;g' ./data/accelerated-domains-cn
+sed -i.bak -r 's;server\s*=\s*/([^/]+).*;\1;g' ./data/apple-cn
+sed -i.bak -r 's;server\s*=\s*/([^/]+).*;\1;g' ./data/google-cn
 
 rm -f ./data/accelerated-domains-cn.bak
+rm -f ./data/apple-cn.bak
+rm -f ./data/google-cn.bak
 
 sed -i.bak '/accelerated-domains-cn/d' ./data/cn
 
 echo "include:accelerated-domains-cn" >>./data/cn
+echo "include:apple-cn" >>./data/cn
+echo "include:google-cn" >>./data/cn
 
 rm -f ./data/cn.bak
+
+## add cn
+echo "" >../../dnsmasq-accelerated-cn.conf
+echo "" >../../dnsmasq-special-cn.conf
+echo "" >../../smartdns-accelerated-cn.conf
+echo "" >../../smartdns-special-cn.conf
+echo "" >../../coredns-accelerated-cn.conf
+echo "" >../../coredns-special-cn.conf
+
+COREDNS_DOMAIN_LIST=""
+COREDNS_DOMAIN_FIRST=1
+for CN_DOMAIN in $(cat ./data/accelerated-domains-cn); do
+  echo "server=/$CN_DOMAIN/223.5.5.5" >>../../dnsmasq-accelerated-cn.conf
+  echo "nameserver /$CN_DOMAIN/local_dns" >>../../smartdns-accelerated-cn.conf
+  if [[ $COREDNS_DOMAIN_FIRST -eq 1 ]]; then
+    COREDNS_DOMAIN_LIST="$CN_DOMAIN"
+    COREDNS_DOMAIN_FIRST=0
+  else
+    COREDNS_DOMAIN_LIST="$COREDNS_DOMAIN_LIST $CN_DOMAIN"
+  fi
+done
+echo "$COREDNS_DOMAIN_LIST {
+  import local_dns
+}" >>../../coredns-accelerated-cn.conf
+
+COREDNS_DOMAIN_LIST=""
+COREDNS_DOMAIN_FIRST=1
+for CN_DOMAIN in $(cat ./data/apple-cn ./data/google-cn); do
+  echo "server=/$CN_DOMAIN/223.5.5.5" >>../../dnsmasq-special-cn.conf
+  echo "nameserver /$CN_DOMAIN/local_dns" >>../../smartdns-special-cn.conf
+  if [[ $COREDNS_DOMAIN_FIRST -eq 1 ]]; then
+    COREDNS_DOMAIN_LIST="$CN_DOMAIN"
+    COREDNS_DOMAIN_FIRST=0
+  else
+    COREDNS_DOMAIN_LIST="$COREDNS_DOMAIN_LIST $CN_DOMAIN"
+  fi
+done
+echo "$COREDNS_DOMAIN_LIST {
+  import local_dns
+}" >>../../coredns-special-cn.conf
 
 ## add gfw
 curl -L "$GFWLIST_ORIGIN_URL" -o ./data/gfwlist.txt

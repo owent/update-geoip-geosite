@@ -39,8 +39,8 @@ jobs:
           mkdir -p "$GITHUB_WORKSPACE/geoip"
           curl -L "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-Country-CSV&license_key=$MAXMIND_LICENSE_KEY&suffix=zip" -o "$GITHUB_WORKSPACE/geoip/GeoLite2-Country-CSV.zip"
           bash $GITHUB_WORKSPACE/build.sh
-          zip all.zip *.dat *.ipset *-blacklist.conf
-          tar -zcvf all.tar.gz *.dat *.ipset *-blacklist.conf
+          zip all.zip *.dat *.ipset *-blacklist.conf *-cn.conf
+          tar -zcvf all.tar.gz *.dat *.ipset *-blacklist.conf *-cn.conf
         shell: bash
         env:
           MAXMIND_LICENSE_KEY: ${{ secrets.MAXMIND_LICENSE_KEY }}
@@ -49,7 +49,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          file: "*.dat;*.ipset;*.sha256sum;*-blacklist.conf;*.zip;*.tar.gz"
+          file: "*.dat;*.ipset;*.sha256sum;*-blacklist.conf;*-cn.conf;*.zip;*.tar.gz"
           tags: true
           draft: false
           overwrite: true
