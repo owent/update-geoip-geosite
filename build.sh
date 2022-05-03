@@ -76,37 +76,29 @@ echo "" >../../smartdns-special-cn.conf
 echo "" >../../coredns-accelerated-cn.conf
 echo "" >../../coredns-special-cn.conf
 
-COREDNS_DOMAIN_LIST=""
-COREDNS_DOMAIN_FIRST=1
+COREDNS_DOMAIN_PREVIOUS=""
 for CN_DOMAIN in $(cat ./data/accelerated-domains-cn); do
   echo "server=/$CN_DOMAIN/223.5.5.5" >>../../dnsmasq-accelerated-cn.conf
   echo "nameserver /$CN_DOMAIN/local_dns" >>../../smartdns-accelerated-cn.conf
-  if [[ $COREDNS_DOMAIN_FIRST -eq 1 ]]; then
-    COREDNS_DOMAIN_LIST="$CN_DOMAIN"
-    COREDNS_DOMAIN_FIRST=0
-  else
-    COREDNS_DOMAIN_LIST="$COREDNS_DOMAIN_LIST,
-$CN_DOMAIN"
+  if [[ ! -z "$COREDNS_DOMAIN_PREVIOUS" ]]; then
+    echo "$COREDNS_DOMAIN_PREVIOUS," >>../../coredns-accelerated-cn.conf
   fi
+  COREDNS_DOMAIN_PREVIOUS="$CN_DOMAIN"
 done
-echo "$COREDNS_DOMAIN_LIST {
+echo "$COREDNS_DOMAIN_PREVIOUS {
   import local_dns
 }" >>../../coredns-accelerated-cn.conf
 
-COREDNS_DOMAIN_LIST=""
-COREDNS_DOMAIN_FIRST=1
+COREDNS_DOMAIN_PREVIOUS=""
 for CN_DOMAIN in $(cat ./data/apple-cn ./data/google-cn); do
   echo "server=/$CN_DOMAIN/223.5.5.5" >>../../dnsmasq-special-cn.conf
   echo "nameserver /$CN_DOMAIN/local_dns" >>../../smartdns-special-cn.conf
-  if [[ $COREDNS_DOMAIN_FIRST -eq 1 ]]; then
-    COREDNS_DOMAIN_LIST="$CN_DOMAIN"
-    COREDNS_DOMAIN_FIRST=0
-  else
-    COREDNS_DOMAIN_LIST="$COREDNS_DOMAIN_LIST,
-$CN_DOMAIN"
+  if [[ ! -z "$COREDNS_DOMAIN_PREVIOUS" ]]; then
+    echo "$COREDNS_DOMAIN_PREVIOUS," >>../../coredns-special-cn.conf
   fi
+  COREDNS_DOMAIN_PREVIOUS="$CN_DOMAIN"
 done
-echo "$COREDNS_DOMAIN_LIST {
+echo "$COREDNS_DOMAIN_PREVIOUS {
   import local_dns
 }" >>../../coredns-special-cn.conf
 
