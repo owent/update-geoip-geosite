@@ -222,7 +222,7 @@ def main():
     gfwlist_dnsmasq_conf_fd.close()
     gfwlist_smart_conf_fd.close()
     gfwlist_coredns_conf_fd.write('{0} {1}\n  import {2}\n{3}\n'.format(
-        ' '.join(gfwlist_coredns_conf_domains), '{',
+        ',\n'.join(gfwlist_coredns_conf_domains), '{',
         options.gfwlist_coredns_snippet, '}'))
     gfwlist_coredns_conf_fd.close()
 
