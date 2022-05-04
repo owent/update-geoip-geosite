@@ -41,6 +41,7 @@ cd repos/domain-list-community
 ACCELERATED_DOMAINS_CHINA="https://cdn.jsdelivr.net/gh/felixonmars/dnsmasq-china-list/accelerated-domains.china.conf"
 APPLE_CHINA="https://cdn.jsdelivr.net/gh/felixonmars/dnsmasq-china-list/apple.china.conf"
 GOOGLE_CHINA="https://cdn.jsdelivr.net/gh/felixonmars/dnsmasq-china-list/google.china.conf"
+BOGUS_NXDOMAIN_CHINA="https://cdn.jsdelivr.net/gh/felixonmars/dnsmasq-china-list/bogus-nxdomain.china.conf"
 GFWLIST_ORIGIN_URL="https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt"
 # MYIP=$(curl https://myip.biturl.top/ 2>/dev/null);
 
@@ -48,6 +49,7 @@ GFWLIST_ORIGIN_URL="https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfw
 curl -L "$ACCELERATED_DOMAINS_CHINA" -o ./data/accelerated-domains-cn
 curl -L "$APPLE_CHINA" -o ./data/apple-cn
 curl -L "$GOOGLE_CHINA" -o ./data/google-cn
+curl -L "$BOGUS_NXDOMAIN_CHINA" -o ./data/bogus-nxdomain-cn
 
 sed -i.bak -r 's;server\s*=\s*/([^/]+).*;\1;g' ./data/accelerated-domains-cn
 sed -i.bak -r '/^\s*#/d' ./data/accelerated-domains-cn
@@ -71,11 +73,14 @@ rm -f ./data/cn.bak
 ## add cn
 echo "" >../../dnsmasq-accelerated-cn.conf
 echo "" >../../dnsmasq-special-cn.conf
+echo "" >../../dnsmasq-bogus-nxdomain-cn.conf
 echo "" >../../smartdns-accelerated-cn.conf
 echo "" >../../smartdns-special-cn.conf
+echo "" >../../smartdns-bogus-nxdomain-cn.conf
 echo "" >../../coredns-accelerated-cn.conf
 echo "" >../../coredns-special-cn.conf
 
+# China accelerated
 COREDNS_DOMAIN_PREVIOUS=""
 for CN_DOMAIN in $(cat ./data/accelerated-domains-cn); do
   echo "server=/$CN_DOMAIN/223.5.5.5" >>../../dnsmasq-accelerated-cn.conf
@@ -89,6 +94,7 @@ echo "$COREDNS_DOMAIN_PREVIOUS {
   import local_dns
 }" >>../../coredns-accelerated-cn.conf
 
+# China special
 COREDNS_DOMAIN_PREVIOUS=""
 for CN_DOMAIN in $(cat ./data/apple-cn ./data/google-cn); do
   echo "server=/$CN_DOMAIN/223.5.5.5" >>../../dnsmasq-special-cn.conf
@@ -101,6 +107,10 @@ done
 echo "$COREDNS_DOMAIN_PREVIOUS {
   import local_dns
 }" >>../../coredns-special-cn.conf
+
+# bogus-nxdomain
+cp -f ./data/bogus-nxdomain-cn ../../dnsmasq-bogus-nxdomain-cn.conf
+sed 's/bogus-nxdomain=/bogus-nxdomain /g' ./data/bogus-nxdomain-cn >../../smartdns-bogus-nxdomain-cn.conf
 
 ## add gfw
 curl -L "$GFWLIST_ORIGIN_URL" -o ./data/gfwlist.txt
