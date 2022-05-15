@@ -43,6 +43,14 @@ APPLE_CHINA="https://cdn.jsdelivr.net/gh/felixonmars/dnsmasq-china-list/apple.ch
 GOOGLE_CHINA="https://cdn.jsdelivr.net/gh/felixonmars/dnsmasq-china-list/google.china.conf"
 BOGUS_NXDOMAIN_CHINA="https://cdn.jsdelivr.net/gh/felixonmars/dnsmasq-china-list/bogus-nxdomain.china.conf"
 GFWLIST_ORIGIN_URL="https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt"
+# gfwlist mirrors:
+#   Github: https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt
+#   Pagure: https://pagure.io/gfwlist/raw/master/f/gfwlist.txt
+#   Repo.or.cz: http://repo.or.cz/gfwlist.git/blob_plain/HEAD:/gfwlist.txt
+#   Bitbucket: https://bitbucket.org/gfwlist/gfwlist/raw/HEAD/gfwlist.txt
+#   Gitlab: https://gitlab.com/gfwlist/gfwlist/raw/master/gfwlist.txt
+#   TuxFamily: https://git.tuxfamily.org/gfwlist/gfwlist.git/plain/gfwlist.txt
+
 # MYIP=$(curl https://myip.biturl.top/ 2>/dev/null);
 
 ## add accelerated-domains-cn
