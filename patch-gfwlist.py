@@ -113,6 +113,8 @@ def main():
     REMOVE_SUFFIX = re.compile('(?P<DOMAIN>[^\\r\\n\\/]+)/.*$|%2F.*$')
     CONVERT_GLOB = re.compile(
         '^([^\\.\\^*]*\\*[^\\.]*\\.)+(?P<DOMAIN>[^\\r\\n\\/\\*]+)')
+    # Letter-Digit-Hyphen (LDH) subset (https://tools.ietf.org/html/rfc952)
+    RFC952_DOMAIN_LDH = re.compile('^[A-Za-z0-9\\.\\-]+$')
 
     if not os.path.exists(options.gfwlist_file):
         sys.stderr.write('{0} not found\n'.format(options.gfwlist_file))
@@ -154,6 +156,12 @@ def main():
                 origin_plains['{0}.com.cn'.format(domain)] = 1
                 continue
 
+        # XXX%2* -> XXX
+        idx = domain.lower().find('%2f')
+        if idx >= 0 and idx < len(domain):
+            print('Convert: {0} => {1}'.format(domain, domain[0:idx]))
+            domain = domain[0:idx]
+
         # XXX* -> plain XXX
         if domain.endswith('*'):
             # Ignore tail wildcard
@@ -163,12 +171,10 @@ def main():
                 continue
 
         # skip invalid domains (hkheadline.com*blog, search*safeweb)
-        if domain.find('*') >= 0:
+        if not RFC952_DOMAIN_LDH.match(domain):
             print('Skip invalid domain: {0}'.format(domain))
             continue
 
-        if domain.startswith("q=") or domain.startswith("q%3"):
-            continue
         origin_domains[domain] = 1
 
     gfwlist_fd = codecs.open(os.path.join(
