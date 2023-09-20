@@ -25,9 +25,9 @@ jobs:
           repository: v2fly/domain-list-community
           path: repos/domain-list-community
       - name: Set up Golang
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4
         with:
-          go-version: ">=1.19.0"
+          go-version-file: repos/domain-list-community/go.mod
         id: go
       - name: Run build.sh
         run: |
