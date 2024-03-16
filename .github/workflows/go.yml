@@ -25,9 +25,9 @@ jobs:
           repository: v2fly/domain-list-community
           path: repos/domain-list-community
       - name: Set up Golang
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
-          go-version-file: repos/domain-list-community/go.mod
+          go-version-file: repos/geoip/go.mod
         id: go
       - name: Run build.sh
         run: |
