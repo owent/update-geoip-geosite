@@ -40,7 +40,7 @@ jobs:
           curl -L -o dbip-country-lite.mmdb.gz "https://download.db-ip.com/free/dbip-country-lite-$YEAR-$MONTH.mmdb.gz"
           gzip -d dbip-country-lite.mmdb.gz
           mkdir -p "$GITHUB_WORKSPACE/repos/geoip/db-ip"
-          mv dbip-country-lite*.mmdb "$GITHUB_WORKSPACE/repos/geoip/db-ip"/db-ip/dbip-country-lite.mmdb
+          mv dbip-country-lite*.mmdb "$GITHUB_WORKSPACE/repos/geoip/db-ip"/dbip-country-lite.mmdb
         shell: bash
       - name: Run build.sh
         run: |
