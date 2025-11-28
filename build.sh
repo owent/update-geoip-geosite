@@ -119,6 +119,7 @@ echo "$COREDNS_DOMAIN_PREVIOUS {
 # bogus-nxdomain
 cp -f ./data/bogus-nxdomain-cn ../../dnsmasq-bogus-nxdomain-cn.conf
 sed 's/bogus-nxdomain=/bogus-nxdomain /g' ./data/bogus-nxdomain-cn >../../smartdns-bogus-nxdomain-cn.conf
+rm -f ./data/bogus-nxdomain-cn
 
 ## add gfw
 curl -L "$GFWLIST_ORIGIN_URL" -o ./data/gfwlist.txt
@@ -133,8 +134,6 @@ python3 ../../patch-gfwlist.py \
 rm -f ./data/gfwlist.txt
 
 cat ./data/gfw
-
-grep -Rn -F 'bogus-nxdomain=' $PWD/data
 
 go run ./ --datapath=$PWD/data
 
