@@ -134,6 +134,8 @@ rm -f ./data/gfwlist.txt
 
 cat ./data/gfw
 
+grep -Rn -F 'bogus-nxdomain=' $PWD/data
+
 go run ./ --datapath=$PWD/data
 
 mv dlc.dat ../../geosite.dat

@@ -13,21 +13,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Checkout geoip
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: v2fly/geoip
           path: repos/geoip
       - name: Checkout domain-list-community
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: v2fly/domain-list-community
           path: repos/domain-list-community
       - name: Set up Golang
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version-file: repos/geoip/go.mod
+          cache-dependency-path: repos/geoip/go.sum
         id: go
       - name: Get DB-IP Lite Country MMDB database
         run: |
