@@ -58,6 +58,7 @@ jobs:
           tar -zcvf all.tar.gz *.dat *.ipset *-blacklist.conf *-cn.conf
         shell: bash
         env:
+          GOTOOLCHAIN: auto
           MAXMIND_LICENSE_KEY: ${{ secrets.MAXMIND_LICENSE_KEY }}
       - name: Release
         uses: xresloader/upload-to-github-release@v1
