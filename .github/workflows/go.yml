@@ -13,21 +13,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Checkout geoip
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: v2fly/geoip
           path: repos/geoip
       - name: Checkout domain-list-community
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: v2fly/domain-list-community
           path: repos/domain-list-community
       - name: Set up Golang
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@v7
         with:
           go-version-file: repos/geoip/go.mod
+          check-latest: true
           cache-dependency-path: repos/geoip/go.sum
         id: go
       - name: Get DB-IP Lite Country MMDB database
@@ -59,7 +60,7 @@ jobs:
         env:
           MAXMIND_LICENSE_KEY: ${{ secrets.MAXMIND_LICENSE_KEY }}
       - name: Release
-        uses: xresloader/upload-to-github-release@main
+        uses: xresloader/upload-to-github-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
