@@ -54,18 +54,39 @@ jobs:
           mkdir -p "$GITHUB_WORKSPACE/geoip"
           curl -L "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-Country-CSV&license_key=$MAXMIND_LICENSE_KEY&suffix=zip" -o "$GITHUB_WORKSPACE/geoip/GeoLite2-Country-CSV.zip"
           bash $GITHUB_WORKSPACE/build.sh
-          zip all.zip *.dat *.ipset *-blacklist.conf *-cn.conf
-          tar -zcvf all.tar.gz *.dat *.ipset *-blacklist.conf *-cn.conf
+          # Package categorized archives
+          zip dat.zip *.dat *.dat.sha256sum
+          tar -zcvf dat.tar.gz *.dat *.dat.sha256sum
+          zip ipset.zip *.ipset
+          tar -zcvf ipset.tar.gz *.ipset
+          zip conf.zip *-blacklist.conf *-cn.conf
+          tar -zcvf conf.tar.gz *-blacklist.conf *-cn.conf
+          zip all.zip *.dat *.dat.sha256sum *.ipset *-blacklist.conf *-cn.conf
+          tar -zcvf all.tar.gz *.dat *.dat.sha256sum *.ipset *-blacklist.conf *-cn.conf
+          sha256sum *.zip *.tar.gz > sha256sums.txt
         shell: bash
         env:
           GOTOOLCHAIN: auto
           MAXMIND_LICENSE_KEY: ${{ secrets.MAXMIND_LICENSE_KEY }}
+      - name: Clean old release assets
+        run: |
+          KEEP="dat.zip dat.tar.gz ipset.zip ipset.tar.gz conf.zip conf.tar.gz all.zip all.tar.gz sha256sums.txt"
+          gh release view latest --json assets --jq '.assets[].name' 2>/dev/null | while read -r asset; do
+            skip=false
+            for keep in $KEEP; do
+              if [ "$asset" = "$keep" ]; then skip=true; break; fi
+            done
+            $skip || gh release delete-asset latest "$asset" -y || true
+          done
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Release
         uses: xresloader/upload-to-github-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          file: "*.dat;*.ipset;*.sha256sum;*-blacklist.conf;*-cn.conf;*.zip;*.tar.gz"
+          file: "*.zip;*.tar.gz;sha256sums.txt"
           tags: true
           draft: false
           overwrite: true
